@@ -66,20 +66,25 @@ func main() {
 			return
 		}
 
-		//append product
-		var products []Product
-		for _, product := range database {
-			products = append(products, product)
-		}
+		//payload product
+		var product Product
 
-		productJSON, err := json.Marshal(&products)
+		payload := req.Body
+		defer req.Body.Close()
+
+		//same as json.Unmarshall
+		err := json.NewDecoder(payload).Decode(&product)
 		if err != nil {
-			message := []byte(`{"message": "Error while marshalling data"}`)
+			message := []byte(`{"message": "Error while parsing data"}`)
 			//status 500
 			SetJSONResp(res, message, http.StatusInternalServerError)
 			return
 		}
-		SetJSONResp(res, productJSON, http.StatusOK)
+		database[product.ID] = product
+
+		message := []byte(`{"message": "Succesfully created a new data"}`)
+		//status 201
+		SetJSONResp(res, message, http.StatusCreated)
 	})
 
 	//start server
