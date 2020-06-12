@@ -26,7 +26,8 @@ func init() {
 	}
 
 	client, err := driver.NewClient(driver.ClientConfig{
-		Connection: conn,
+		Connection:     conn,
+		Authentication: driver.BasicAuthentication("root", "password"),
 	})
 	if err != nil {
 		log.Printf("Error create a new client connection, cause:%+v\n", err)
